@@ -6,6 +6,7 @@ from std_msgs.msg import Int32, String
 
 
 class CylinderSimulator(Node):
+
     def __init__(self):
         super().__init__("cylinder_simulator")
 
