@@ -9,7 +9,7 @@ from rclpy.executors import MultiThreadedExecutor
 from std_msgs.msg import String, Int32
 from rclpy.action import ActionServer, CancelResponse, GoalResponse
 
-from pymodbus.client import ModbusTcpClient
+#from pymodbus.client import ModbusTcpClient
 from pymodbus.exceptions import ConnectionException, ModbusIOException
 from gait_controller_msgs.action import MoveCylinder
 from gait_controller.gait_targets import TARGETS
@@ -56,6 +56,7 @@ class GaitMainActionServer(Node):
         self.client = None
 
         if self.use_modbus:
+            from pymodbus.client import ModbusTcpClient
             self.client = ModbusTcpClient(OPTA_IP, port=OPTA_PORT, timeout=MODBUS_TIMEOUT_S)
             if not self.client.connect():
                 self.get_logger().error("Failed to connect to Modbus TCP server")
