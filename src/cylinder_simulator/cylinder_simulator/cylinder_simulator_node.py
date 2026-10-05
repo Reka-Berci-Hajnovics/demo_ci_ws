@@ -8,7 +8,7 @@ from std_msgs.msg import Int32, String
 class CylinderSimulator(Node):
 
     def __init__(self):
-        super().__init__("cylinder_simulator")
+        super().__init__('cylinder_simulator')
 
         # Simulation configuration
         self.step = 10
@@ -16,35 +16,35 @@ class CylinderSimulator(Node):
         self.max_pos = 4000
 
         self.splits = {
-            "cu": 2600,
-            "cl": 3000,
+            'cu': 2600,
+            'cl': 3000,
         }
 
         # Simulated cylinder positions
         self.positions = {
-            "cu": 250,
-            "cp": 1500,
-            "cl": 250,
+            'cu': 250,
+            'cp': 1500,
+            'cl': 250,
         }
 
         # Current actuator commands
         self.states = {
-            "cu": "stop",
-            "cp": "stop",
-            "cl": "stop",
+            'cu': 'stop',
+            'cp': 'stop',
+            'cl': 'stop',
         }
 
         # Position feedback
         self.axis_publishers = {
-            "cu": self.create_publisher(Int32, "/cu_pos", 10),
-            "cp": self.create_publisher(Int32, "/cp_pos", 10),
-            "cl": self.create_publisher(Int32, "/cl_pos", 10),
+            'cu': self.create_publisher(Int32, '/cu_pos', 10),
+            'cp': self.create_publisher(Int32, '/cp_pos', 10),
+            'cl': self.create_publisher(Int32, '/cl_pos', 10),
         }
 
         # Actuator command input
         self.create_subscription(
             String,
-            "/arduino_command",
+            '/arduino_command',
             self.command_callback,
             10,
         )
@@ -56,7 +56,7 @@ class CylinderSimulator(Node):
         )
 
         self.get_logger().info(
-            "Cylinder simulator started."
+            'Cylinder simulator started.'
         )
 
     def command_callback(self, msg):
@@ -64,7 +64,7 @@ class CylinderSimulator(Node):
 
         if len(parts) != 2:
             self.get_logger().warning(
-                f"Invalid command: {msg.data}"
+                f'Invalid command: {msg.data}'
             )
             return
 
@@ -72,14 +72,14 @@ class CylinderSimulator(Node):
         state = parts[1].lower()
 
         valid_states = {
-            "cu": ["in", "out", "stop", "door_open", "door_close"],
-            "cp": ["in", "out", "stop"],
-            "cl": ["in", "out", "stop", "door_open", "door_close"],
+            'cu': ['in', 'out', 'stop', 'door_open', 'door_close'],
+            'cp': ['in', 'out', 'stop'],
+            'cl': ['in', 'out', 'stop', 'door_open', 'door_close'],
         }
 
         if axis not in valid_states:
             self.get_logger().warning(
-                f"Unknown axis: {axis}"
+                f'Unknown axis: {axis}'
             )
             return
 
@@ -92,7 +92,7 @@ class CylinderSimulator(Node):
         self.states[axis] = state
 
         self.get_logger().info(
-            f"{axis.upper()} -> {state}"
+            f'{axis.upper()} -> {state}'
         )
 
     def move_towards(self, position, target):
@@ -105,45 +105,45 @@ class CylinderSimulator(Node):
         return position
 
     def update_positions(self):
-        for axis in ["cu", "cp", "cl"]:
+        for axis in ['cu', 'cp', 'cl']:
             position = self.positions[axis]
             state = self.states[axis]
 
             split = self.splits.get(axis)
 
-            if axis in ["cu", "cl"]:
-                if state == "in":
+            if axis in ['cu', 'cl']:
+                if state == 'in':
                     position = self.move_towards(
                         position,
                         self.min_pos,
                     )
 
-                elif state == "out":
+                elif state == 'out':
                     position = self.move_towards(
                         position,
                         split,
                     )
 
-                elif state == "door_open":
+                elif state == 'door_open':
                     position = self.move_towards(
                         position,
                         self.max_pos,
                     )
 
-                elif state == "door_close":
+                elif state == 'door_close':
                     position = self.move_towards(
                         position,
                         split,
                     )
 
-            elif axis == "cp":
-                if state == "in":
+            elif axis == 'cp':
+                if state == 'in':
                     position = self.move_towards(
                         position,
                         1300,
                     )
 
-                elif state == "out":
+                elif state == 'out':
                     position = self.move_towards(
                         position,
                         3000,
@@ -176,5 +176,5 @@ def main(args=None):
             rclpy.shutdown()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
